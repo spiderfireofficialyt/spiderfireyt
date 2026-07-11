@@ -1,11 +1,14 @@
+import os
+import datetime
 import discord
+from discord import app_commands
 from discord.ext import commands, tasks
 import requests
-import os
 
 # Put your variables here
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
+YOUTUBE_CHANNEL_ID = os.getenv("YOUTUBE_CHANNEL_ID")
 
 DISCORD_CHANNEL_ID = 1442353889373589584
 WELCOME_CHANNEL_ID = 1474271892692271268
@@ -25,8 +28,8 @@ bot=commands.Bot(command_prefix="SF!",intents=intents)
 def get_latest_video():
     url = (
         f"https://www.googleapis.com/youtube/v3/search"
-        f"?key={API_KEY}"
-        f"&channelId={CHANNEL_ID}"
+        f"?key={YOUTUBE_API_KEY}"
+        f"&channelId={YOUTUBE_CHANNEL_ID}"
         f"&part=snippet,id"
         f"&order=date"
         f"&maxResults=1"
