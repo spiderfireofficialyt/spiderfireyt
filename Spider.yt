@@ -101,7 +101,7 @@ async def on_member_join(member):
 
         embed.set_thumbnail(url=member.avatar.url if member.avatar else member.default_avatar.url)
 
-        await channel.send(member.mention, embed=embed)
+    await channel.send(f"{member.mention} {embed_object_here}")
 
 @bot.tree.command(name="announce", description="Send an announcement (Creator Only)")
 async def announce(interaction: discord.Interaction, message: str):
@@ -165,46 +165,60 @@ async def collab(
         ephemeral=True
     )
 
-async def dm_user(member, message):
+async def send_mod_dm(member: discord.Member, action: str, reason: str):
+    """Send a DM to a member about moderation action"""
     try:
-        await member.send(message)
+        embed = discord.Embed(
+            title=f"⚠️ Moderation Action: {action}",
+            description=f"**Reason:** {reason}",
+            color=discord.Color.red()
+        )
+        await member.send(embed=embed)
     except discord.Forbidden:
-        pass
+        print(f"Could not DM {member} - DMs are closed")
 
-def is_staff(ctx):
-    return ctx.author.id == STAFF_ID
+@bot.tree.command(name="warn", description="Warn a member")
+async def warn(
+    interaction: discord.Interaction,
+    member: discord.Member,
+    reason: str
+):
+    user_id = member.id
+
+    if user_id not in warnings:
+        warnings[user_id] = []
+
+    warnings[user_id].append({
+        "reason": reason,
+        "staff": interaction.user.name
+    })
+
+    await send_mod_dm(member, "Warning", reason)
+
+    await interaction.response.send_message(
+        f"⚠️ {member.mention} has been warned.\n"
+        f"**Reason:** {reason}\n"
+        f"**Moderator:** {interaction.user.mention}"
+    )
 
 
-@bot.command()
-async def warn(ctx, member: discord.Member, *, reason="No reason provided"):
-    if not is_staff(ctx):
-        return await ctx.send("❌ You do not have permission.")
-
-    await dm_user(member, f"You have been warned in **{ctx.guild.name}**.\nReason: {reason}")
-
-    await ctx.send(f"⚠️ {member.mention} has been warned.\nReason: {reason}")
-
-
-@bot.command()
-async def kick(ctx, member: discord.Member, *, reason="No reason provided"):
-    if not is_staff(ctx):
-        return await ctx.send("❌ You do not have permission.")
-
-    await dm_user(member, f"You have been kicked from **{ctx.guild.name}**.\nReason: {reason}")
-
+@bot.tree.command(name="kick", description="Kick a member")
+async def kick(interaction: discord.Interaction, member: discord.Member, reason: str):
+    await send_mod_dm(member, "Kick", reason)
     await member.kick(reason=reason)
-    await ctx.send(f"👢 {member.mention} has been kicked.")
+    
+    await interaction.response.send_message(
+        f"👢 {member.mention} has been kicked.\n**Reason:** {reason}"
+    )
 
-
-@bot.command()
-async def ban(ctx, member: discord.Member, *, reason="No reason provided"):
-    if not is_staff(ctx):
-        return await ctx.send("❌ You do not have permission.")
-
-    await dm_user(member, f"You have been banned from **{ctx.guild.name}**.\nReason: {reason}")
-
+@bot.tree.command(name="ban", description="Ban a member")
+async def ban(interaction: discord.Interaction, member: discord.Member, reason: str):
+    await send_mod_dm(member, "Ban", reason)
     await member.ban(reason=reason)
-    await ctx.send(f"🔨 {member.mention} has been banned.")
+
+    await interaction.response.send_message(
+        f"🔨 {member.mention} has been banned.\n**Reason:** {reason}"
+    )
 
 
 @bot.command()
@@ -227,16 +241,21 @@ async def clear(ctx, amount: int):
     await ctx.send(f"🧹 Deleted {amount} messages.", delete_after=5)
 
 
-@bot.command()
-async def timeout(ctx, member: discord.Member, minutes: int, *, reason="No reason provided"):
-    if not is_staff(ctx):
-        return await ctx.send("❌ You do not have permission.")
+@bot.tree.command(name="timeout", description="Timeout a member")
+async def timeout(
+    interaction: discord.Interaction,
+    member: discord.Member,
+    minutes: int,
+    reason: str
+):
+    await send_mod_dm(member, "Timeout", reason)
+    duration = datetime.timedelta(minutes=minutes)
 
-    await dm_user(member, f"You have been timed out in **{ctx.guild.name}**.\nReason: {reason}")
+    await member.timeout(duration, reason=reason)
 
-    await member.timeout(timedelta(minutes=minutes), reason=reason)
-
-    await ctx.send(f"⏳ {member.mention} has been timed out for {minutes} minutes.")
+    await interaction.response.send_message(
+        f"🔇 {member.mention} has been timed out for {minutes} minutes.\n**Reason:** {reason}"
+    )
 
 
 @bot.command()
