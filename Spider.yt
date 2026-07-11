@@ -90,7 +90,7 @@ async def on_member_join(member):
 
     if channel:
         member_count = member.guild.member_count
-        await channel.send(content=member.mention, embed=embed)
+        await channel.send(content=member.mention)
 
         embed = discord.Embed(
             title="👋 Welcome to Spider Fire's Society!",
