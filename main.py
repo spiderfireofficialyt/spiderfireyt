@@ -79,6 +79,12 @@ async def youtube_check():
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
+    
+    try:
+        synced = await bot.tree.sync()
+        print(f"Synced {len(synced)} command(s)")
+    except Exception as e:
+        print(f"Failed to sync commands: {e}")
 
     if not youtube_check.is_running():
         youtube_check.start()
