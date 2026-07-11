@@ -246,33 +246,6 @@ async def clear(ctx, amount: int):
     await ctx.send(f"🧹 Deleted {amount} messages.", delete_after=5)
 
 
-@bot.tree.command(name="timeout", description="Timeout a member")
-async def timeout(
-    interaction: discord.Interaction,
-    member: discord.Member,
-    minutes: int,
-    reason: str
-):
-    await send_mod_dm(member, "Timeout", reason)
-    duration = datetime.timedelta(minutes=minutes)
-
-    await member.timeout(duration, reason=reason)
-
-    await interaction.response.send_message(
-        f"🔇 {member.mention} has been timed out for {minutes} minutes.\n**Reason:** {reason}"
-    )
-
-
-@bot.command()
-async def untimeout(ctx, member: discord.Member):
-    if not is_staff(ctx):
-        return await ctx.send("❌ You do not have permission.")
-
-    await member.timeout(None)
-
-    await ctx.send(f"✅ Removed timeout from {member.mention}.")
-
-
 @bot.command()
 async def lock(ctx):
     if not is_staff(ctx):
