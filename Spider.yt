@@ -83,25 +83,26 @@ async def on_ready():
 
 @bot.event
 async def on_member_join(member):
-    # Give Subscriber role
-    role = discord.utils.get(member.guild.roles, name="Subscriber")
-
-    if role:
-        await member.add_roles(role)
-
-    # Welcome channel
     channel = discord.utils.get(member.guild.text_channels, name="welcome")
 
     if channel:
         embed = discord.Embed(
             title="Welcome to Spider Fire Society!",
-            description=f"Welcome {member.mention} to Spider Fire Society!\n\nYou are member **#{member.guild.member_count}**.",
-            color=discord.Color.blue()
+            description=f"""
+Welcome to **Spider Fire Society**!
+
+This is where you can find the latest uploads, announcements, and community updates.
+
+You are the **{member.guild.member_count} member!**
+
+Thank you for joining and we hope you enjoy the content!
+""",
+            color=discord.Color.red()
         )
 
         embed.set_thumbnail(url=member.avatar.url if member.avatar else member.default_avatar.url)
 
-    await channel.send(f"{member.mention} {embed_object_here}")
+        await channel.send(content=member.mention, embed=embed)
 
 @bot.tree.command(name="announce", description="Send an announcement (Creator Only)")
 async def announce(interaction: discord.Interaction, message: str):
