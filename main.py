@@ -206,32 +206,6 @@ async def unban(interaction: discord.Interaction, user_id: str):
     )
 
 
-@bot.tree.command(name="timeout", description="Timeout a member")
-async def timeout(
-    interaction: discord.Interaction,
-    member: discord.Member,
-    minutes: int,
-    reason: str
-):
-
-    duration = datetime.timedelta(minutes=minutes)
-
-    await member.timeout(duration, reason=reason)
-
-    await interaction.response.send_message(
-        f"🔇 {member.mention} has been timed out for {minutes} minutes.\n**Reason:** {reason}"
-    )
-
-
-@bot.tree.command(name="untimeout", description="Remove a timeout")
-async def untimeout(interaction: discord.Interaction, member: discord.Member):
-
-    await member.timeout(None)
-
-    await interaction.response.send_message(
-        f"✅ Timeout removed from {member.mention}."
-    )
-
 
 @bot.tree.command(name="purge", description="Delete messages")
 async def purge(interaction: discord.Interaction, amount: int):
