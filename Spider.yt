@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands, tasks
 import requests
 import os
+import API
 
 # Put your variables here
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
