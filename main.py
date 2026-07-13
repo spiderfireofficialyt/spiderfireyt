@@ -331,6 +331,73 @@ async def videoidea(interaction: discord.Interaction, idea: str):
         "✅ Your video idea has been submitted!",
         ephemeral=True
     )
-    
+    @bot.tree.command(
+    name="ytstatus",
+    description="Post a Spider Fire YouTube video status."
+)
+@app_commands.describe(
+    title="Video title",
+    series="Video series (optional)",
+    link="Video link (optional)"
+)
+@app_commands.choices(
+    status=[
+        app_commands.Choice(name="🎥 Recording", value="Recording"),
+        app_commands.Choice(name="✂️ Editing", value="Editing"),
+        app_commands.Choice(name="📅 Scheduled", value="Scheduled"),
+        app_commands.Choice(name="⬆️ Uploaded", value="Uploaded"),
+        app_commands.Choice(name="🔴 Live", value="Live"),
+        app_commands.Choice(name="❌ Cancelled", value="Cancelled")
+    ]
+)
+async def ytstatus(
+    interaction: discord.Interaction,
+    title: str,
+    status: app_commands.Choice[str],
+    series: str = None,
+    link: str = None
+):
+
+    channel = bot.get_channel(1442353889373589584)
+
+    embed = discord.Embed(
+        title="🔥 Spider Fire YouTube Status",
+        color=discord.Color.red()
+    )
+
+    embed.add_field(
+        name="Video Title:",
+        value=title,
+        inline=False
+    )
+
+    embed.add_field(
+        name="Video Series:",
+        value=series if series else "N/A",
+        inline=False
+    )
+
+    embed.add_field(
+        name="Video Status:",
+        value=status.value,
+        inline=False
+    )
+
+    embed.add_field(
+        name="Video Link:",
+        value=link if link else "N/A",
+        inline=False
+    )
+
+    embed.set_footer(
+        text=f"Posted by {interaction.user}"
+    )
+
+    await channel.send(embed=embed)
+
+    await interaction.response.send_message(
+        "✅ YouTube status posted!",
+        ephemeral=True
+    )
     
 bot.run(DISCORD_TOKEN)
