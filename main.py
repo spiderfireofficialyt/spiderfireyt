@@ -331,7 +331,7 @@ async def videoidea(interaction: discord.Interaction, idea: str):
         "✅ Your video idea has been submitted!",
         ephemeral=True
     )
-    @bot.tree.command(
+@bot.tree.command(
     name="ytstatus",
     description="Post a Spider Fire YouTube video status."
 )
