@@ -332,4 +332,5 @@ async def videoidea(interaction: discord.Interaction, idea: str):
         ephemeral=True
     )
     
+    
 bot.run(DISCORD_TOKEN)
