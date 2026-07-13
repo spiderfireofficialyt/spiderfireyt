@@ -333,21 +333,24 @@ async def videoidea(interaction: discord.Interaction, idea: str):
     )
 @bot.tree.command(
     name="ytstatus",
-    description="Post a Spider Fire YouTube video status."
+    description="Post a YouTube video status update."
 )
 @app_commands.describe(
     title="Video title",
+    status="Current status",
     series="Video series (optional)",
     link="Video link (optional)"
 )
 @app_commands.choices(
     status=[
-        app_commands.Choice(name="🎥 Recording", value="Recording"),
-        app_commands.Choice(name="✂️ Editing", value="Editing"),
-        app_commands.Choice(name="📅 Scheduled", value="Scheduled"),
-        app_commands.Choice(name="⬆️ Uploaded", value="Uploaded"),
-        app_commands.Choice(name="🔴 Live", value="Live"),
-        app_commands.Choice(name="❌ Cancelled", value="Cancelled")
+        app_commands.Choice(name="🎥 Recording", value="🎥 Recording"),
+        app_commands.Choice(name="✂️ Editing", value="✂️ Editing"),
+        app_commands.Choice(name="🖼️ Thumbnail", value="🖼️ Thumbnail"),
+        app_commands.Choice(name="📅 Scheduled", value="📅 Scheduled"),
+        app_commands.Choice(name="⬆️ Uploading", value="⬆️ Uploading"),
+        app_commands.Choice(name="✅ Uploaded", value="✅ Uploaded"),
+        app_commands.Choice(name="🔴 Live", value="🔴 Live"),
+        app_commands.Choice(name="❌ Cancelled", value="❌ Cancelled"),
     ]
 )
 async def ytstatus(
@@ -355,49 +358,31 @@ async def ytstatus(
     title: str,
     status: app_commands.Choice[str],
     series: str = None,
-    link: str = None
+    link: str = None,
 ):
+    # Only you can use this command
+    if interaction.user.id != CREATOR_ID:
+        await interaction.response.send_message(
+            "❌ Only the creator can use this command.",
+            ephemeral=True
+        )
+        return
 
     channel = bot.get_channel(1442353889373589584)
 
     embed = discord.Embed(
-        title="🔥 Spider Fire YouTube Status",
+        title="📺 Spider Fire Video Status",
         color=discord.Color.red()
     )
 
-    embed.add_field(
-        name="Video Title:",
-        value=title,
-        inline=False
-    )
-
-    embed.add_field(
-        name="Video Series:",
-        value=series if series else "N/A",
-        inline=False
-    )
-
-    embed.add_field(
-        name="Video Status:",
-        value=status.value,
-        inline=False
-    )
-
-    embed.add_field(
-        name="Video Link:",
-        value=link if link else "N/A",
-        inline=False
-    )
-
-    embed.set_footer(
-        text=f"Posted by {interaction.user}"
-    )
+    embed.add_field(name="🎬 Video Title", value=title, inline=False)
+    embed.add_field(name="📚 Video Series", value=series or "N/A", inline=False)
+    embed.add_field(name="📌 Video Status", value=status.value, inline=False)
+    embed.add_field(name="🔗 Video Link", value=link or "N/A", inline=False)
 
     await channel.send(embed=embed)
-
     await interaction.response.send_message(
-        "✅ YouTube status posted!",
+        "✅ Video status posted!",
         ephemeral=True
     )
-    
 bot.run(DISCORD_TOKEN)
