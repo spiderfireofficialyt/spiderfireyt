@@ -345,10 +345,7 @@ async def videoidea(interaction: discord.Interaction, idea: str):
     status=[
         app_commands.Choice(name="🎥 Recording", value="🎥 Recording"),
         app_commands.Choice(name="✂️ Editing", value="✂️ Editing"),
-        app_commands.Choice(name="🖼️ Thumbnail", value="🖼️ Thumbnail"),
         app_commands.Choice(name="📅 Scheduled", value="📅 Scheduled"),
-        app_commands.Choice(name="⬆️ Uploading", value="⬆️ Uploading"),
-        app_commands.Choice(name="✅ Uploaded", value="✅ Uploaded"),
         app_commands.Choice(name="🔴 Live", value="🔴 Live"),
         app_commands.Choice(name="❌ Cancelled", value="❌ Cancelled"),
     ]
