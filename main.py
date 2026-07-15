@@ -25,56 +25,6 @@ intents.presences=True
 
 bot=commands.Bot(command_prefix="SF!",intents=intents)
 
-def get_latest_video():
-    url = (
-        f"https://www.googleapis.com/youtube/v3/search"
-        f"?key={YOUTUBE_API_KEY}"
-        f"&channelId={YOUTUBE_CHANNEL_ID}"
-        f"&part=snippet,id"
-        f"&order=date"
-        f"&maxResults=1"
-        f"&type=video"
-    )
-
-    data = requests.get(url).json()
-
-    if data.get("items"):
-        video = data["items"][0]
-        return (
-            video["id"]["videoId"],
-            video["snippet"]["title"]
-        )
-
-    return None, None
-
-
-@tasks.loop(minutes=5)
-async def youtube_check():
-    global last_video_id
-
-    video_id, title = get_latest_video()
-
-    if video_id is None:
-        return
-
-    # First run: save the current video so it doesn't announce old uploads
-    if last_video_id is None:
-        last_video_id = video_id
-        return
-
-    # New upload detected
-    if video_id != last_video_id:
-        last_video_id = video_id
-
-        channel = bot.get_channel(DISCORD_CHANNEL_ID)
-
-        if channel:
-            await channel.send(
-                f"🎉 **New Video Uploaded!**\n"
-                f"**{title}**\n"
-                f"https://youtu.be/{video_id}"
-            )
-
 
 @bot.event
 async def on_ready():
