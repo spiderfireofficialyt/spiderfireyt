@@ -15,6 +15,8 @@ WELCOME_CHANNEL_ID = 1474271892692271268
 suggestion_channel_id = 1502808778461024468
 CREATOR_ROLE_ID = 1442353888639324217
 STAFF_ROLE_ID = 1442353888639324211
+VERIFY_ROLE_ID = 1528949759602331708
+VERIFY_CHANNEL_ID = 1528938325400879125
 
 last_video_id = None
 
@@ -28,16 +30,25 @@ bot=commands.Bot(command_prefix="SF!",intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user}")
-    
-    try:
-        synced = await bot.tree.sync()
-        print(f"Synced {len(synced)} command(s)")
-    except Exception as e:
-        print(f"Failed to sync commands: {e}")
+    print("Bot is online")
 
-    if not youtube_check.is_running():
-        youtube_check.start()
+    await bot.tree.sync()
+
+    bot.add_view(VerifyButton())
+
+    channel = bot.get_channel(1528938325400879125)
+
+    if channel:
+        embed = discord.Embed(
+            title="✅ Verification",
+            description="Press the button below to verify and become a verified member.",
+            color=discord.Color.green()
+        )
+
+        await channel.send(
+            embed=embed,
+            view=VerifyButton()
+        )
 
 
 @bot.event
@@ -281,4 +292,39 @@ async def videoidea(interaction: discord.Interaction, idea: str):
         "✅ Your video idea has been submitted!",
         ephemeral=True
     )
+
+
+class VerifyButton(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+
+    @discord.ui.button(
+        label="Verify",
+        style=discord.ButtonStyle.green,
+        custom_id="verify_button"
+    )
+    async def verify(self, interaction: discord.Interaction, button: discord.ui.Button):
+
+        role = interaction.guild.get_role(VERIFY_ROLE_ID)
+
+        if role is None:
+            await interaction.response.send_message(
+                "❌ Verification role not found.",
+                ephemeral=True
+            )
+            return
+
+        if role in interaction.user.roles:
+            await interaction.response.send_message(
+                "✅ You are already verified!",
+                ephemeral=True
+            )
+            return
+
+        await interaction.user.add_roles(role)
+
+        await interaction.response.send_message(
+            "✅ You have been verified!",
+            ephemeral=True
+        )
 bot.run(DISCORD_TOKEN)
